@@ -785,16 +785,29 @@ document.getElementById('imgRight').onclick = () => {
 document.getElementById('btnZoomClose').onclick = () => document.getElementById('zoomOverlay').classList.remove('active');
 document.getElementById('zoomOverlay').onclick = e => { if (e.target === e.currentTarget) document.getElementById('zoomOverlay').classList.remove('active'); };
 
-// 拖拽
+// 拖拽（按住鼠标拖拽）
 const zoomContainer = document.getElementById('zoomContainer');
-zoomContainer.onmousedown = e => { isDragging = true; };
+let dragStartX = 0, dragStartY = 0;
+
+zoomContainer.onmousedown = e => {
+  isDragging = true;
+  dragStartX = e.clientX - zoomX;
+  dragStartY = e.clientY - zoomY;
+  zoomContainer.style.cursor = 'grabbing';
+  e.preventDefault();
+};
+
 document.onmousemove = e => {
   if (!isDragging) return;
-  zoomX += e.movementX;
-  zoomY += e.movementY;
+  zoomX = e.clientX - dragStartX;
+  zoomY = e.clientY - dragStartY;
   updateZoom();
 };
-document.onmouseup = () => isDragging = false;
+
+document.onmouseup = () => {
+  isDragging = false;
+  zoomContainer.style.cursor = 'grab';
+};
 
 // 滚轮缩放
 document.getElementById('zoomOverlay').onwheel = e => {
